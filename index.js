@@ -1,5 +1,5 @@
 const express = require("express");
-require('dotenv').config();
+require("dotenv").config();
 const http = require("http");
 const bcrypt = require("bcrypt");
 const path = require("path");
@@ -27,8 +27,8 @@ app.use(express.static(path.join(__dirname, "./public")));
 app.use(cors());
 
 //routes
-app.use("/login", loginRouter);
-app.use("/register", registerRouter);
+app.use("/api/auth/login", loginRouter);
+app.use("/api/auth/signup", registerRouter);
 // app.use("/questions", questionRouter);
 
 // app.get("/", (req, res) => {
