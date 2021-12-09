@@ -24,21 +24,14 @@ router.post("/", async (req, res) => {
         password: hashPassword,
       });
 
-      newUser
-        .save()
-        .then((data) => {
-          console.log("Added to database" + data);
-        })
-        .catch((err) => {
-          console.log("Couldnot add to database" + err);
-        });
+      newUser.save();
 
-      res.send({ status: "success", message: "User added successfully" });
+      res.status(200).send({ status: "success", message: "User added successfully" });
     } else {
-      res.send({ status: "error", message: "Username already exists" });
+      res.status(400).send({ status: "error", message: "Username already exists" });
     }
   } catch {
-    res.send("Internal server error");
+    res.status(400).send("Internal server error");
   }
 });
 
@@ -69,7 +62,9 @@ router.post("/questions", async (req, res) => {
         console.log("Couldnot add to answers" + err);
       });
 
-    res.send({ status: "success", message: "Answers added successfully" });
+    res
+      .status(200)
+      .send({ status: "success", message: "Answers added successfully" });
   } catch (err) {
     res.send("Answers couldnot be added");
   }

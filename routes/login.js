@@ -18,13 +18,6 @@ router.post("/", async (req, res) => {
     const foundUser = await User.findOne({ username: req.body.username });
     console.log(foundUser);
 
-    // User.findOne({ username: req.body.username }, (err, foundUser) => {
-    //   if (err) {
-    //     console.log(err);
-    //   } else if (foundUser) {
-    //     console.log(foundUser);
-    //   }
-    // });
     if (foundUser) {
       let submittedPass = req.body.password;
       let storedPass = foundUser.password;
@@ -32,18 +25,20 @@ router.post("/", async (req, res) => {
       const passwordMatch = await bcrypt.compare(submittedPass, storedPass);
       if (passwordMatch) {
         let username = foundUser.username;
-        res.send({ status: "success", username: username });
+        res.status(200).send({ status: "success", username: username });
       } else {
-        res.send({ status: "error", message: "Incorrect password" });
+        res
+          .status(400)
+          .send({ status: "error", message: "Incorrect password" });
       }
     } else {
       let fakePass = `$2b$$10$`;
       await bcrypt.compare(req.body.password, fakePass);
 
-      res.send({ status: "error", message: "User not found" });
+      res.status(400).send({ status: "error", message: "User not found" });
     }
   } catch {
-    res.send("Internal server error");
+    res.status(500).send("Internal server error");
   }
 });
 

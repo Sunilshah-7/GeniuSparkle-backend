@@ -1,11 +1,9 @@
 const mongoose = require("mongoose");
+const User = require("./Users").schema;
 
-const AnswerSchema = new mongoose.Schema(
+const Answer = new mongoose.Schema(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
+    user: [User],
     nickname: {
       type: String,
     },
@@ -19,6 +17,6 @@ const AnswerSchema = new mongoose.Schema(
   { collection: "answers" }
 );
 
-const model = mongoose.model("Answer", AnswerSchema);
+const model = mongoose.model("Answer", Answer);
 
 module.exports = model;
