@@ -1,69 +1,77 @@
 var express = require("express");
 var router = express.Router();
 const bodyParser = require("body-parser");
-const users = require("../data").userDB;
-//const questions = require("../data").questions;
-const answers = require("../data").answers;
+//const users = require("../data").userDB;
+const questions = require("../data").questions;
+// const answers = require("../data").answers;
 const bcrypt = require("bcrypt");
+const User = require("../models/Users");
+const Answer = require("../models/Answers");
 
 router.use(bodyParser.json());
 
 router.post("/", async (req, res) => {
   try {
-    let foundUser = users.find((data) => req.body.email === data.email);
+    const foundUser = await User.findOne({ username: req.body.username });
+
     if (!foundUser) {
       let hashPassword = await bcrypt.hash(req.body.password, 10);
 
-      let newUser = {
+      let newUser = new User({
         id: Date.now(),
+        name: req.body.name,
         username: req.body.username,
-        email: req.body.email,
         password: hashPassword,
-      };
-      users.push(newUser);
-      console.log("User list", users);
+      });
 
-      res.send(
-        `<div align ='center'><h2>Registration successful</h2></div><br>
-        <div align="center">
-        <a href='./questions.html'>Questions</a>
-        </div>
-        <br>
-        `
-      );
+      newUser
+        .save()
+        .then((data) => {
+          console.log("Added to database" + data);
+        })
+        .catch((err) => {
+          console.log("Couldnot add to database" + err);
+        });
+
+      res.send({ status: "success", message: "User added successfully" });
     } else {
-      res.send(
-        "<div align ='center'><h2>Email already used</h2></div><br><br><div align='center'><a href='./registration.html'>Register again</a></div>"
-      );
+      res.send({ status: "error", message: "Username already exists" });
     }
   } catch {
     res.send("Internal server error");
   }
 });
 
-router.post("/questions", async (req, res, next) => {
+router.get("/questions", async (req, res) => {
+  console.log("questions", questions);
   try {
-    let answersList = {
-      id: '1',
-      answer1: req.body.question1,
-      answer2: req.body.question2,
-      answer3: req.body.question3,
-    };
-
-    answers.push(answersList);
-    console.log("Answers list", answers);
-    res.send(`
-    <h1>Thank you for your answers!</h1>
-    <div align='center'>
-        <a href='/login.html'>login</a>
-        </div>
-        <br><br>
-        <div align='center'>
-        <a href='/registration.html'>Register another user</a>
-        </div>
-    `);
-  } catch (err) {
+    res.send(questions);
+  } catch {
     res.send("Internal server error");
+  }
+});
+
+router.post("/questions", async (req, res) => {
+  try {
+    console.log(req.body);
+    let answersList = new Answer({
+      nickname: req.body.nickname,
+      favfood: req.body.favfood,
+      favmovie: req.body.favmovie,
+    });
+
+    answersList
+      .save()
+      .then((data) => {
+        console.log("Added to answers" + data);
+      })
+      .catch((err) => {
+        console.log("Couldnot add to answers" + err);
+      });
+
+    res.send({ status: "success", message: "Answers added successfully" });
+  } catch (err) {
+    res.send("Answers couldnot be added");
   }
 });
 
