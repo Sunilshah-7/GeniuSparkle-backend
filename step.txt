@@ -1,0 +1,6 @@
+for posting the answers to correct user,
+we are going to use jwt token.
+After register, we are sending the token back to user in json format
+which will be saved in localstorage and send in headers from frontend 
+while submitting the answer which will tell us whose answers they are.
+Then we will populate the database with the answers.

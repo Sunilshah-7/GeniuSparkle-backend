@@ -23,7 +23,6 @@ mongoose
 
 //middleware
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, "./public")));
 app.use(cors());
 
 //routes
@@ -31,9 +30,9 @@ app.use("/api/auth/login", loginRouter);
 app.use("/api/auth/signup", registerRouter);
 // app.use("/questions", questionRouter);
 
-// app.get("/", (req, res) => {
-//   res.sendFile(path.join(__dirname, "./public/index.html"));
-// });
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "./public/index.html"));
+});
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, function () {

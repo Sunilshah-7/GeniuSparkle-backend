@@ -1,21 +1,16 @@
 const mongoose = require("mongoose");
-const User = require("./Users").schema;
 
-const Answer = new mongoose.Schema(
-  {
-    user: [User],
-    nickname: {
-      type: String,
-    },
-    favfood: {
-      type: String,
-    },
-    favmovie: {
-      type: String,
-    },
+const Answer = new mongoose.Schema({
+  nickname: {
+    type: String,
   },
-  { collection: "answers" }
-);
+  favfood: {
+    type: String,
+  },
+  favmovie: {
+    type: String,
+  },
+});
 
 const model = mongoose.model("Answer", Answer);
 

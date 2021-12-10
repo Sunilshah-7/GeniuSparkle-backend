@@ -1,12 +1,14 @@
 var express = require("express");
 var router = express.Router();
 const bodyParser = require("body-parser");
-// const users = require("../data").userDB;
 const bcrypt = require("bcrypt");
-const answers = require("../data").answers;
 const User = require("../models/Users");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
+//middleware
 router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: false }));
 
 router.get("/", (req, res) => {
   res.send("login page");
@@ -14,9 +16,7 @@ router.get("/", (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    console.log("req.body", req.body);
     const foundUser = await User.findOne({ username: req.body.username });
-    console.log(foundUser);
 
     if (foundUser) {
       let submittedPass = req.body.password;
@@ -25,7 +25,12 @@ router.post("/", async (req, res) => {
       const passwordMatch = await bcrypt.compare(submittedPass, storedPass);
       if (passwordMatch) {
         let username = foundUser.username;
-        res.status(200).send({ status: "success", username: username });
+        let token = jwt.sign({ username: username }, process.env.secretKey, {
+          expiresIn: "1h",
+        });
+        res
+          .status(200)
+          .send({ status: "success", username: username, sessionid: token });
       } else {
         res
           .status(400)
@@ -42,40 +47,5 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.post("/:id", async (req, res) => {
-  try {
-    // let answerfound = await answers.find();
-    let answerfound = await answers.find((data) => req.params.id === data.id);
-    if (answerfound) {
-      let answerNo = "answer" + req.params.id;
-      let answer = answerfound[answerNo];
-      console.log("User answer" + answer);
-      let submittedAnswer = req.body.answer;
-      if (answer === submittedAnswer) {
-        res.send(
-          `<div align ='center'>
-          <h2>login successful</h2>
-          </div>
-          <br><br><br>
-          <div align='center'><a href='/register.html'>Register again<a><div>
-          `
-        );
-      } else {
-        res.send(
-          `<div align ='center'>
-          <h2>Answer didn't match.</h2>
-          </div>
-          <br><br><br>
-          <div align='center'><a href='/login.html'>Login again<a><div>
-          `
-        );
-      }
-    }
-    //answer1
-    console.log("Answers are found", answerfound);
-  } catch (err) {
-    res.send("Post on login security questions not found.");
-  }
-});
 
 module.exports = router;

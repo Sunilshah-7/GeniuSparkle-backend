@@ -1,14 +1,16 @@
 var express = require("express");
 var router = express.Router();
 const bodyParser = require("body-parser");
-//const users = require("../data").userDB;
 const questions = require("../data").questions;
-// const answers = require("../data").answers;
 const bcrypt = require("bcrypt");
 const User = require("../models/Users");
 const Answer = require("../models/Answers");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
+//middleware
 router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: false }));
 
 router.post("/", async (req, res) => {
   try {
@@ -24,11 +26,24 @@ router.post("/", async (req, res) => {
         password: hashPassword,
       });
 
+      let token = jwt.sign(
+        { username: newUser.username },
+        process.env.secretKey,
+        {
+          expiresIn: "1h",
+        }
+      );
       newUser.save();
 
-      res.status(200).send({ status: "success", message: "User added successfully" });
+      res.status(200).send({
+        status: "success",
+        message: "User added successfully",
+        token: token,
+      });
     } else {
-      res.status(400).send({ status: "error", message: "Username already exists" });
+      res
+        .status(400)
+        .send({ status: "error", message: "Username already exists" });
     }
   } catch {
     res.status(400).send("Internal server error");
@@ -36,7 +51,6 @@ router.post("/", async (req, res) => {
 });
 
 router.get("/questions", async (req, res) => {
-  console.log("questions", questions);
   try {
     res.send(questions);
   } catch {
@@ -45,26 +59,31 @@ router.get("/questions", async (req, res) => {
 });
 
 router.post("/questions", async (req, res) => {
+  const token = req.headers["x-access-token"];
   try {
-    console.log(req.body);
+    const decoded = jwt.verify(token, process.env.secretKey);
+    const username = decoded.username;
+
     let answersList = new Answer({
       nickname: req.body.nickname,
       favfood: req.body.favfood,
       favmovie: req.body.favmovie,
     });
 
-    answersList
-      .save()
-      .then((data) => {
-        console.log("Added to answers" + data);
-      })
-      .catch((err) => {
-        console.log("Couldnot add to answers" + err);
-      });
+    const foundUser = await User.findOneAndUpdate(
+      { username: username },
+      { answers: answersList },
+      {
+        new: true,
+      }
+    );
 
-    res
-      .status(200)
-      .send({ status: "success", message: "Answers added successfully" });
+    foundUser.save();
+
+    res.status(200).send({
+      status: "success",
+      message: "Answers added successfully to User",
+    });
   } catch (err) {
     res.send("Answers couldnot be added");
   }
