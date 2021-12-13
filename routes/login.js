@@ -15,6 +15,7 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", async (req, res) => {
+  console.log(req.body);
   try {
     const foundUser = await User.findOne({ username: req.body.username });
 
@@ -25,9 +26,15 @@ router.post("/", async (req, res) => {
       const passwordMatch = await bcrypt.compare(submittedPass, storedPass);
       if (passwordMatch) {
         let username = foundUser.username;
-        let token = jwt.sign({ username: username }, process.env.secretKey, {
-          expiresIn: "1h",
-        });
+        let id = foundUser._id;
+
+        let token = jwt.sign(
+          { id: id, username: username },
+          process.env.secretKey,
+          {
+            expiresIn: "1h",
+          }
+        );
         res
           .status(200)
           .send({ status: "success", username: username, sessionid: token });
@@ -46,6 +53,5 @@ router.post("/", async (req, res) => {
     res.status(500).send("Internal server error");
   }
 });
-
 
 module.exports = router;

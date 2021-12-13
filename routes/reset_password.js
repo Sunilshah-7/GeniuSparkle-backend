@@ -8,11 +8,16 @@ const jwt = require("jsonwebtoken");
 //middleware
 router.use(bodyParser.json());
 
-router.post("/",async(req,res)=>{
-    try{
-        let username = req.body.username;  
-    }
-    catch(err){
-        res.status(400).send(err);
-    }
-})
+router.get("/", (req, res) => {
+  res.send("reset password");
+});
+
+router.post("/", async (req, res) => {
+  try {
+    let username = req.body.username;
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
+
+module.exports = router;
