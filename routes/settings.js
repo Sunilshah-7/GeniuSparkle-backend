@@ -14,65 +14,69 @@ router.get("/", (req, res) => {
   console.log("settings to change data");
 });
 
-router.get("/getUsername", (req, res) => {
-  User.find({}, function (err, users) {
-    var userMap = {};
-    users.forEach(function (user, index) {
-      userMap[index] = user.username;
-    });
+// router.get("/getUsername", (req, res) => {
+//   User.find({}, function (err, users) {
+//     var userMap = {};
+//     users.forEach(function (user, index) {
+//       userMap[index] = user.username;
+//     });
 
-    // if (Object.values(userMap).indexOf("tan_jiro") > -1) {
-    //   res.send("has user");
-    // }
-    res.send(userMap);
-  });
-});
+//     // if (Object.values(userMap).indexOf("tan_jiro") > -1) {
+//     //   res.send("has user");
+//     // }
+//     res.send(userMap);
+//   });
+// });
 
 router.post("/", (req, res) => {
   const token = req.headers["x-access-token"];
   try {
-    const decoded = jwt.verify(token, process.env.secretKey);
-    const username = decoded.username;
-    const id = decoded.id;
+    if (token) {
+      const decoded = jwt.verify(token, process.env.secretKey);
+      const username = decoded.username;
+      const id = decoded.id;
 
-    if (
-      req.body.name === " " ||
-      req.body.name === null ||
-      req.body.name === ""
-    ) {
-      res.status(401).json({ message: "name cannot be empty" });
-    } else {
-      User.findOne({ _id: id }, (err, doc) => {
-        doc.name = req.body.name;
-        doc.save();
-      });
-    }
-
-    if (
-      req.body.username === " " ||
-      req.body.username === null ||
-      req.body.username === ""
-    ) {
-      res.status(401).json({ message: "Username cannot be empty" });
-    } else {
-      User.find({}, function (err, users) {
-        var userMap = {};
-        users.forEach(function (user, index) {
-          userMap[index] = user.username;
+      if (
+        req.body.name === " " ||
+        req.body.name === null ||
+        req.body.name === ""
+      ) {
+        res.status(401).json({ message: "name cannot be empty" });
+      } else {
+        User.findOne({ _id: id }, (err, doc) => {
+          doc.name = req.body.name;
+          doc.save();
         });
+      }
 
-        if (Object.values(userMap).indexOf(req.body.username) > -1) {
-          res
-            .status(401)
-            .json({ message: "Username already exists,try another one" });
-        } else {
-          User.findOne({ _id: id }, (err, doc) => {
-            doc.username = req.body.username;
-            doc.save();
+      if (
+        req.body.username === " " ||
+        req.body.username === null ||
+        req.body.username === ""
+      ) {
+        res.status(401).json({ message: "Username cannot be empty" });
+      } else {
+        User.find({}, function (err, users) {
+          var userMap = {};
+          users.forEach(function (user, index) {
+            userMap[index] = user.username;
           });
-          res.status(200).json({ message: "Username changed" });
-        }
-      });
+
+          if (Object.values(userMap).indexOf(req.body.username) > -1) {
+            res
+              .status(401)
+              .json({ message: "Username already exists,try another one" });
+          } else {
+            User.findOne({ _id: id }, (err, doc) => {
+              doc.username = req.body.username;
+              doc.save();
+            });
+            res.status(200).json({ message: "Username changed" });
+          }
+        });
+      }
+    } else {
+      res.status(401).json({ message: "Unauthorized" });
     }
     // res.status(200).json({
     //   message: `New name ${req.body.name} & ${req.body.username} saved`,

@@ -10,9 +10,9 @@ require("dotenv").config();
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: false }));
 
-router.get("/", (req, res) => {
-  res.send("login page");
-});
+// router.get("/", (req, res) => {
+//   res.send("login page");
+// });
 
 router.post("/", async (req, res) => {
   console.log(req.body);

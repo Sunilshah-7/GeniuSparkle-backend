@@ -61,29 +61,33 @@ router.get("/questions", async (req, res) => {
 router.post("/questions", async (req, res) => {
   const token = req.headers["x-access-token"];
   try {
-    const decoded = jwt.verify(token, process.env.secretKey);
-    const username = decoded.username;
+    if (!token) {
+      res.status(401).send({ status: "error", message: "No token provided" });
+    } else {
+      const decoded = jwt.verify(token, process.env.secretKey);
+      const username = decoded.username;
 
-    let answersList = new Answer({
-      nickname: req.body.nickname,
-      favfood: req.body.favfood,
-      favmovie: req.body.favmovie,
-    });
+      let answersList = new Answer({
+        nickname: req.body.nickname,
+        favfood: req.body.favfood,
+        favmovie: req.body.favmovie,
+      });
 
-    const foundUser = await User.findOneAndUpdate(
-      { username: username },
-      { answers: answersList },
-      {
-        new: true,
-      }
-    );
+      const foundUser = await User.findOneAndUpdate(
+        { username: username },
+        { answers: answersList },
+        {
+          new: true,
+        }
+      );
 
-    foundUser.save();
+      foundUser.save();
 
-    res.status(200).send({
-      status: "success",
-      message: "Answers added successfully to User",
-    });
+      res.status(200).send({
+        status: "success",
+        message: "Answers added successfully to User",
+      });
+    }
   } catch (err) {
     res.send("Answers couldnot be added");
   }
