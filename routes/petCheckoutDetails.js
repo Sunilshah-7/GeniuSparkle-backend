@@ -37,8 +37,9 @@ const upload = multer({
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: false }));
 
+
 //get all pet details
-router.get("/", (req, res) => {
+router.get("/getDetails", (req, res) => {
   PetCheckoutDetails.find()
     .populate([{ path: "user", select: "name username" }])
     .then((petDetails) => {

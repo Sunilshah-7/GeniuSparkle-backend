@@ -11,7 +11,6 @@ router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: false }));
 
 router.post("/", async (req, res) => {
-  console.log(req.body);
   try {
     const foundUser = await User.findOne({ username: req.body.username });
 
