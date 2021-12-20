@@ -15,6 +15,7 @@ const registerRouter = require("./routes/register");
 const resetPasswordRouter = require("./routes/reset_password");
 const settingRouter = require("./routes/settings");
 const petCheckoutRouter = require("./routes/petCheckoutDetails");
+const userDetailsRouter = require("./routes/userDetails");
 // const questionRouter = require('./routes/questions');
 
 const app = express();
@@ -35,6 +36,7 @@ app.use("/api/auth/signup", registerRouter);
 app.use("/api/user/reset_password", resetPasswordRouter);
 app.use("/api/user/settings", settingRouter);
 app.use("/api/user/checkout/pet_details", petCheckoutRouter);
+app.use("/api/user/user_details", userDetailsRouter);
 // app.use("/questions", questionRouter);
 
 // app.get("/", (req, res) => {
