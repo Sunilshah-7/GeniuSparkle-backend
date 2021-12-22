@@ -26,7 +26,7 @@ router.get("/", async (req, res) => {
       res.status(400).send({ status: "error", message: "User not found" });
     }
   } catch (err) {
-    res.status(500).send("Internal server error");
+    res.status(500).send(err);
   }
 });
 
