@@ -18,6 +18,10 @@ const User = new mongoose.Schema(
     answers: {
       type: Object,
     },
+    role:{
+      type:String,
+      enum:["admin","user"],
+    }
   },
   { collection: "users" }
 );
