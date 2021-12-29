@@ -3,30 +3,30 @@ var router = express.Router();
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const User = require("../models/Users");
+const AdminUser = require("../models/Admin");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const adminUsers = require("../.deploy/users.json");
+
 // create application/json parser
 router.use(bodyParser.json());
-
 // router.get("/", (req, res) => {
 //   res.send(users);
 // });
 
-function auth(username) {
-  const foundUser = adminUsers.users.find((user) => user.username === username);
-  if (foundUser) {
-    return foundUser;
+async function auth(username) {
+  const user = await AdminUser.findOne({ username: username });
+  if (user) {
+    return user;
   } else {
     return false;
   }
 }
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
   try {
-    const user = auth(username);
+    const user = await auth(username);
     const isValid = bcrypt.compareSync(password, user.password);
     if (user && isValid) {
       const token = jwt.sign(
@@ -37,9 +37,9 @@ router.post("/", (req, res) => {
         }
       );
       res.json({
-        token: token,
         adminName: user.username,
         message: "Authorized",
+        token: token,
       });
     } else {
       res.status(401).json({
@@ -58,7 +58,6 @@ router.get("/getUsers", (req, res) => {
     if (token) {
       const decoded = jwt.verify(token, process.env.secretKey);
       const username = decoded.username;
-      const id = decoded.id;
 
       const adminUser = auth(username);
       if (adminUser) {
