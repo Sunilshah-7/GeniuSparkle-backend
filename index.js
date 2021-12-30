@@ -31,6 +31,9 @@ mongoose
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
+app.get("/", async (req, res) => {
+  res.send("Hello World");
+});
 //routes
 app.use("/api/auth/login", loginRouter);
 app.use("/api/auth/signup", registerRouter);
