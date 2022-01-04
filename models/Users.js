@@ -18,10 +18,21 @@ const User = new mongoose.Schema(
     answers: {
       type: Object,
     },
-    role:{
-      type:String,
-      enum:["admin","user"],
-    }
+    amountPaid: {
+      type: Number,
+    },
+    insuranceLimit: {
+      type: Number,
+    },
+    insuranceUsed: {
+      type: Number,
+    },
+    monthsRemaining: {
+      type: Number,
+    },
+    insuranceStatus: {
+      type: Boolean,
+    },
   },
   { collection: "users" }
 );

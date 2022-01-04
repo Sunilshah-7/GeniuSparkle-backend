@@ -17,7 +17,7 @@ router.get("/", async (req, res) => {
     const username = decoded.username;
 
     const foundUser = await User.findOne({ username: username }).select(
-      "name username _id answers"
+      "name username _id answers amountPaid insuranceLimit insuranceUsed insuranceStatus monthsRemaining"
     );
 
     if (foundUser) {

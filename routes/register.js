@@ -24,7 +24,11 @@ router.post("/", async (req, res) => {
         name: req.body.name,
         username: req.body.username,
         password: hashPassword,
-        role: "user",
+        amountPaid: 0,
+        insuranceLimit:0,
+        insuranceUsed:0,
+        monthsRemaining:0,
+        insuranceStatus:false,
       });
 
       let token = jwt.sign(

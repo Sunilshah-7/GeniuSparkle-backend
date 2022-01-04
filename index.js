@@ -17,12 +17,14 @@ const settingRouter = require("./routes/settings");
 const petCheckoutRouter = require("./routes/petCheckoutDetails");
 const userDetailsRouter = require("./routes/userDetails");
 const adminRouter = require("./routes/admin");
-// const questionRouter = require('./routes/questions');
 
 const app = express();
 const server = http.createServer(app);
 
-//connect to mongodb
+//connect to mongodb and deta
+// const deta = Deta(process.env.detaKey);
+// const db = deta.Base("Users");
+// console.log(db);
 mongoose
   .connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("MongoDB Connected..."));
@@ -31,9 +33,7 @@ mongoose
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
-app.get("/", async (req, res) => {
-  res.send("Hello World");
-});
+
 //routes
 app.use("/api/auth/login", loginRouter);
 app.use("/api/auth/signup", registerRouter);
@@ -42,13 +42,17 @@ app.use("/api/user/settings", settingRouter);
 app.use("/api/user/checkout/pet_details", petCheckoutRouter);
 app.use("/api/user/user_details", userDetailsRouter);
 app.use("/api/admin", adminRouter);
-// app.use("/questions", questionRouter);
+
 
 // app.get("/", (req, res) => {
 //   res.sendFile(path.join(__dirname, "./public/index.html"));
 // });
 
 const PORT = process.env.PORT || 8080;
+// For Heroku
 server.listen(PORT, function () {
   console.log("server is listening on port: " + PORT);
 });
+
+//For DETA
+// module.exports = app;
