@@ -32,7 +32,18 @@ router.post("/", async (req, res) => {
         );
         res
           .status(200)
-          .send({ status: "success", username: username, sessionid: token });
+          .send({
+            status: "success",
+            username: username,
+            name: foundUser.name,
+            answers:foundUser.answers,
+            amountPaid:foundUser.amountPaid,
+            insuranceLimit:foundUser.insuranceLimit,
+            insuranceUsed:foundUser.insuranceUsed,
+            insuranceStatus:foundUser.insuranceStatus,
+            monthsRemaining:foundUser.monthsRemaining,
+            sessionid: token,
+          });
       } else {
         res
           .status(400)
