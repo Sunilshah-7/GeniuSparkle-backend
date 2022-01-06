@@ -6,7 +6,6 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const mongoUrl = process.env.mongoUrl;
 const Grid = require("gridfs-stream");
-// const maxmind = require('maxmind');
 
 //routers
 const loginRouter = require("./routes/login");
@@ -37,7 +36,7 @@ mongoose
 //middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
-// app.use("/file", express.static(__dirname + "/uploads"));
+
 
 //routes
 app.use("/api/auth/login", loginRouter);
@@ -48,8 +47,6 @@ app.use("/api/user/checkout/pet_details", petCheckoutRouter);
 app.use("/api/user/user_details", userDetailsRouter);
 app.use("/api/admin", adminRouter);
 //file handling
-app.post("/upload", uploadController.uploadFiles);
-app.get("/files", uploadController.getListFiles);
 app.get("/files/:name", uploadController.download);
 
 const PORT = process.env.PORT || 8080;

@@ -6,7 +6,8 @@ const GridFSBucket = require("mongodb").GridFSBucket;
 
 const url = dbConfig.url;
 
-const baseUrl = "http://localhost:8080/files/";
+const baseUrl = "http://geniusparkle12.herokuapp.com/files/";
+
 
 const mongoClient = new MongoClient(url);
 
@@ -19,11 +20,9 @@ const uploadFiles = async (req, res) => {
       return res.send({
         message: "You must select a file.",
       });
+    } else {
+      return;
     }
-
-    return res.send({
-      message: "File has been uploaded.",
-    });
   } catch (error) {
     console.log(error);
 
@@ -33,35 +32,33 @@ const uploadFiles = async (req, res) => {
   }
 };
 
-const getListFiles = async (req, res) => {
-  try {
-    await mongoClient.connect();
+const getListFiles = async (filename, callback) => {
+  await mongoClient.connect();
 
-    const database = mongoClient.db(dbConfig.database);
-    const images = database.collection(dbConfig.imgBucket + ".files");
+  const database = mongoClient.db(dbConfig.database);
+  const images = database.collection(dbConfig.imgBucket + ".files");
 
-    const cursor = images.find({});
+  const cursor = images.find();
 
-    if ((await cursor.count()) === 0) {
-      return res.status(500).send({
-        message: "No files found!",
-      });
-    }
-
-    let fileInfos = [];
-    await cursor.forEach((doc) => {
-      fileInfos.push({
-        name: doc.filename,
-        url: baseUrl + doc.filename,
-      });
-    });
-
-    return res.status(200).send(fileInfos);
-  } catch (error) {
+  if ((await cursor.count()) === 0) {
     return res.status(500).send({
-      message: error.message,
+      message: "No files found!",
     });
   }
+
+  let fileInfos = [];
+  await cursor.forEach((doc) => {
+    fileInfos.push({
+      name: doc.filename,
+      url: baseUrl + doc.filename,
+    });
+  });
+
+  fileInfos.map((file) => {
+    if (file.name === filename) {
+      return callback(null, file.url);
+    }
+  });
 };
 
 const download = async (req, res) => {
