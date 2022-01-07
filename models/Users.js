@@ -34,7 +34,7 @@ const User = new mongoose.Schema(
       type: Number,
     },
     insuranceStatus: {
-      type: Boolean,
+      type: String,
     },
   },
   { collection: "users" }
