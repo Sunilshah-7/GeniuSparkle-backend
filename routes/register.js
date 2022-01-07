@@ -24,6 +24,7 @@ router.post("/", async (req, res) => {
         name: req.body.name,
         username: req.body.username,
         password: hashPassword,
+        insuranceName :"",
         amountPaid: 0,
         insuranceLimit:0,
         insuranceUsed:0,

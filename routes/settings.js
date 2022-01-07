@@ -24,7 +24,7 @@ router.post("/", (req, res) => {
         } else {
           res.status(200).send(user);
         }
-      });
+      }).select("-password");
     } else {
       res.status(401).json({ message: "Unauthorized" });
     }

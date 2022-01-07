@@ -18,6 +18,9 @@ const User = new mongoose.Schema(
     answers: {
       type: Object,
     },
+    insuranceName: {
+      type: String,
+    },
     amountPaid: {
       type: Number,
     },

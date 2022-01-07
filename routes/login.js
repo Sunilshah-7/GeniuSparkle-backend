@@ -37,6 +37,7 @@ router.post("/", async (req, res) => {
             username: username,
             name: foundUser.name,
             answers:foundUser.answers,
+            insuranceName:foundUser.insuranceName,
             amountPaid:foundUser.amountPaid,
             insuranceLimit:foundUser.insuranceLimit,
             insuranceUsed:foundUser.insuranceUsed,
