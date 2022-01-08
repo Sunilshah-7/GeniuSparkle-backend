@@ -33,7 +33,7 @@ router.post("/", async (req, res) => {
       });
 
       let token = jwt.sign(
-        { username: newUser.username },
+        { id: newUser.id, username: newUser.username },
         process.env.secretKey,
         {
           expiresIn: "1h",
