@@ -7,7 +7,7 @@ const PetCheckoutDetails = new mongoose.Schema(
       required: true,
     },
     age: {
-      type: Number,
+      type: String,
       required: true,
     },
     image: {
@@ -25,6 +25,19 @@ const PetCheckoutDetails = new mongoose.Schema(
   { collection: "petdetails" }
 );
 
+// const PetDetailsArray = new mongoose.Schema(
+//   {
+//     petDetails: [
+//       {
+//         type: mongoose.Schema.Types.ObjectId,
+//         ref: "PetCheckoutDetails",
+//       },
+//     ],
+//   },
+//   { collection: "petdetailsarray" }
+// );
+
 const model = mongoose.model("PetCheckoutDetails", PetCheckoutDetails);
 
 module.exports = model;
+// module.exports = mongoose.model("PetDetailsArray", PetDetailsArray);

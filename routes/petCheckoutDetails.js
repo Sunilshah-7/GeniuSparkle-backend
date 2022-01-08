@@ -4,6 +4,7 @@ var router = express.Router();
 const multer = require("multer");
 const jwt = require("jsonwebtoken");
 const PetCheckoutDetails = require("../models/PetDetails");
+const PetDetailsArray = require("../models/PetDetailsArray");
 const { getListFiles } = require("../controllers/upload");
 const upload = require("../middleware/upload");
 require("dotenv").config();
@@ -54,8 +55,48 @@ router.post("/", upload, async (req, res) => {
         petType: req.body.petType,
         user: userid,
       });
-      const result = await petCheckoutDetails.save();
-      res.status(200).send(result);
+      const foundUserPets = await PetCheckoutDetails.find({ user: userid });
+
+      await petCheckoutDetails.save();
+
+      // res.status(200).send(result);
+      if (foundUserPets.length === 0) {
+        const newUsers = await PetCheckoutDetails.find({ user: userid });
+        petid = [];
+        newUsers.forEach((pet) => {
+          petid.push(pet._id);
+        });
+        const petDetailsArray = new PetDetailsArray({
+          id: Date.now(),
+          petDetails: petid,
+          userid: userid,
+        });
+
+        await petDetailsArray.save();
+        const arrayResult = await petDetailsArray.populate({
+          path: "petDetails",
+          select: "name age image petType",
+        });
+
+        res.status(200).send(arrayResult);
+      } else {
+        petid = [];
+        foundUserPets.forEach((pet) => {
+          petid.push(pet._id);
+        });
+        PetDetailsArray.findOneAndUpdate(
+          { userid: userid },
+          { $set: { petDetails: petid } },
+          { new: true },
+          (err, result) => {
+            if (result) {
+              res.status(200).send(result);
+            } else {
+              console.log(err);
+            }
+          }
+        ).populate({ path: "petDetails", select: "name age image petType" });
+      }
     }
   } catch (err) {
     res.status(500).send(err);
