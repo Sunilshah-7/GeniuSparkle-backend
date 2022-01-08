@@ -59,16 +59,18 @@ router.post("/", upload, async (req, res) => {
 
       await petCheckoutDetails.save();
 
+      console.log(foundUserPets.length);
       // res.status(200).send(result);
       if (foundUserPets.length === 0) {
         const newUsers = await PetCheckoutDetails.find({ user: userid });
+        console.log("New User");
         petid = [];
         newUsers.forEach((pet) => {
           petid.push(pet._id);
         });
         const petDetailsArray = new PetDetailsArray({
           id: Date.now(),
-          petDetails: petid,
+          petDetails: [petid],
           userid: userid,
         });
 
@@ -80,22 +82,27 @@ router.post("/", upload, async (req, res) => {
 
         res.status(200).send(arrayResult);
       } else {
+        const oldUsers = await PetCheckoutDetails.find({ user: userid });
         petid = [];
-        foundUserPets.forEach((pet) => {
+
+        oldUsers.forEach((pet) => {
           petid.push(pet._id);
         });
+        console.log(petid);
         PetDetailsArray.findOneAndUpdate(
           { userid: userid },
-          { $set: { petDetails: petid } },
+          { petDetails: petid },
           { new: true },
           (err, result) => {
             if (result) {
               res.status(200).send(result);
-            } else {
+            } else if (err) {
               console.log(err);
             }
           }
         ).populate({ path: "petDetails", select: "name age image petType" });
+
+      
       }
     }
   } catch (err) {
