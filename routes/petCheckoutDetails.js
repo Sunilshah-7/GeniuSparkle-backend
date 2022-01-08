@@ -17,14 +17,26 @@ const baseUrl = "http://geniusparkle12.herokuapp.com/files/";
 
 //get all pet details
 router.get("/getDetails", (req, res) => {
-  PetCheckoutDetails.find()
-    .populate([{ path: "user", select: "name username" }])
-    .then((petDetails) => {
-      res.send(petDetails);
-    })
-    .catch((err) => {
-      res.send(err);
+  const token = req.headers["x-access-token"];
+  try {
+    if (token) {
+      const decoded = jwt.verify(token, process.env.secretKey);
+      const userid = decoded.id;
+      PetDetailsArray.find({ userid: userid }, (err, petDetails) => {
+        if (err) {
+          res.status(500).send(err);
+        } else {
+          res.status(200).send(petDetails);
+        }
+      }).populate({ path: "petDetails", select: "name age image petType" });
+    } else {
+      res.status(401).json({ message: "Unauthorized" });
+    }
+  } catch (err) {
+    res.status(401).send({
+      message: err.message,
     });
+  }
 });
 
 //actual route for uploading all datas
@@ -101,8 +113,6 @@ router.post("/", upload, async (req, res) => {
             }
           }
         ).populate({ path: "petDetails", select: "name age image petType" });
-
-      
       }
     }
   } catch (err) {
