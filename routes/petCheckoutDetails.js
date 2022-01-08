@@ -39,6 +39,30 @@ router.get("/getDetails", (req, res) => {
   }
 });
 
+router.delete("/:id", (req, res) => {
+  const token = req.headers["x-access-token"];
+  try {
+    if (token) {
+      // const decoded = jwt.verify(token, process.env.secretKey);
+      // const userid = decoded.id;
+
+      PetCheckoutDetails.findByIdAndDelete(req.params.id, (err, petDetails) => {
+        if (err) {
+          res.status(500).send({ message: "Something went wrong" });
+        } else {
+          res.status(200).send({ message: "deleted successfully" });
+        }
+      });
+    } else {
+      res.status(401).json({ message: "Unauthorized" });
+    }
+  } catch (err) {
+    res.status(401).send({
+      message: err.message,
+    });
+  }
+});
+
 //actual route for uploading all datas
 router.post("/", upload, async (req, res) => {
   const token = req.headers["x-access-token"];
